@@ -13,12 +13,16 @@ import { onChangeFieldValidator } from './../../../Validators/FormValidator/Form
 import { useEffect, useState } from "react";
 import Preloader from "../../UI/Preloader/Preloader"
 import { Navigate, NavLink, useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux';
+import { setFields, deleteFields } from '../../../features/fields/fieldSlice'
 
 
 function Auth(props) {
     let stateApp = props.stateApp;
     let setStateApp = props.setStateApp;
     let validateInput = stateApp.validateInput;
+    const fieldsState = useSelector(state => state.inputFields.value);
+  	const dispatch = useDispatch()
     // const [csrfToken, setcsrfToken] = useState(null);
     // console.log(csrfToken);
     useEffect(()=>{
@@ -29,6 +33,12 @@ function Auth(props) {
         
         let copy = Object.assign([], stateApp);
         copy.msg = '';
+        dispatch(deleteFields());
+        dispatch(setFields([
+                                {id:2, name:"email", placeholder:"Ваша почта", type: "text", touch:false, valid: false, value: "", msg: "", checks: [], icon: faUser},                                    
+                                {id:1, name:"password", placeholder:"Введите пароль", type: "password", touch:false, valid: false, value: "", msg: "", checks: [], icon: faKey},
+                            ]));
+
         copy.validateInput.fields = null;
         copy.validateInput.fields = [
                                     {id:2, name:"email", placeholder:"Ваша почта", type: "text", touch:false, valid: false, value: "", msg: "", checks: [], icon: faUser},                                    
@@ -175,7 +185,7 @@ console.log(stateApp)
                     <div className={Styles.AuthForm}>
                         <Preloader stateApp={stateApp} setStateApp={setStateApp}/>
                         {
-                            stateApp.validateInput.fields.map((el)=>{
+                           fieldsState.map((el)=>{
                                     return (
                                         renderInput(el)
                                     )
